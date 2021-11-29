@@ -132,8 +132,8 @@ while(!bobKey) {
 console.log(`Ключи Алисы:\nприватный - {${aliceKey.p.k}, ${aliceKey.p.m}}\nоткрытый - {${aliceKey.o.k}, ${aliceKey.o.m}}\n`);
 console.log(`Ключи Боба:\nприватный - {${bobKey.p.k}, ${bobKey.p.m}}\nоткрытый - {${bobKey.o.k}, ${bobKey.o.m}}\n`);
 
-//console.log(`Алиса хочет передать Бобу сообщение: "Привет, меня зовут Алиса"`);
-var en = encrypt("Hello World!", aliceKey.o)
+console.log(`Алиса хочет передать Бобу сообщение: "Привет, меня зовут Алиса"`);
+var en = encrypt("Привет, меня зовут Алиса", aliceKey.o)
 console.log(en);
 var de = decrypt(en, aliceKey.p);
 console.log(de);
