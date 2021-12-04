@@ -82,10 +82,14 @@ val keyword: Map<Char, Int> = mapOf(
     ' ' to 79
 )
 val reversed: Map<Int, Char> = keyword.entries.associate{ (k,v) -> v to k }
+const val kwMin: Int = 1
 const val kwLen: Int = 79
 
 fun main(args: Array<String>) {
-    val raw: String = File("src/main/resources/input.txt").readText()
+    print("Введите имя файла: ")
+    val fileName = readLine()
+    var path: String = "src/main/resources/$fileName.txt"
+    val raw: String = File(path).readText()
     var text: StringBuilder = StringBuilder(raw)
     print("Введите смещение (число): ")
     val key: Int = readLine()!!.toInt()
@@ -95,6 +99,9 @@ fun main(args: Array<String>) {
             var newIdx: Int = symbol + key;
             if (newIdx > kwLen) {
                 newIdx -= kwLen
+            }
+            if (newIdx < kwMin) {
+                newIdx += kwLen
             }
             val newIt: Char = reversed[newIdx]!!
             text.setCharAt(idx, newIt)
