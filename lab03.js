@@ -6,7 +6,7 @@ Array.prototype.random = function () {
 }
 
 var mod = (divident, divisor) => {
-
+	return divident % divisor;
 };
 
 var trueRandom = (min, max) => {
@@ -36,28 +36,28 @@ var generate = (n, f) => {
 
 var f = (p, q) => {
 	return (p-1)*(q-1);
-}
+};
 
+var isValid = (a, b) => {
+	return (a % b) != 0 && (b % a) != 0;
+};
+
+/*
 var pack = (str) => {
-	var result = [];
-	for (var i = 0; i < str.length; i++) {
-		result.push(BigInt(str.charCodeAt(i)));
-	}
-	log(result);
+	var result = Uint8Array.from(Buffer.from(str));
+	//log(result);
 	return result;
 }
 
 var unpack = (bytes) => {
-	var result = "";
-	log(bytes);
-	for (var i = 0; i < bytes.length; i++) {
-		result += String.fromCharCode(Number(bytes[i]));
-	}
+	var result = new Buffer.from(bytes).toString();
+	//log(result);
 	return result;
 }
 
 var encrypt = (msg, key) => {
 	var m = pack(msg);
+	log(m);
 	var arr = [];
 	for (var i = 0; i < m.length; i++) {
 		arr.push(mod((m[i] ** key.k), key.m));
@@ -69,10 +69,20 @@ var decrypt = (msg, key) => {
 	var m = msg.split(',').reverse();
 	var arr = [];
 	for (var i = 0; i < m.length; i++) {
-		arr.push(mod((BigInt(m[i]) ** key.k), key.m));
+		arr.push(mod((m[i] ** key.k), key.m));
 	}
+	log(arr);
 	var res = unpack(arr);
-	return res;
+	return msg;
+}
+*/
+
+var encrypt = (msg, key) => {
+	return BigInt(mod(msg ** key.k, key.m));
+}
+
+var decrypt = (msg, key) => {
+	return BigInt(mod(msg ** key.k, key.m));
 }
 
 var errCount = 0;
@@ -90,7 +100,7 @@ var getKey = () => {
 	var fi = f(p, q);
 	var e = res.random();
 	var err = 0;
-	while (e < 1 || e > fi) {
+	while ((e < 1 || e > fi) && !isValid(e, fi)) {
 		e = res.random();
 		err++;
 		if (err > 100) {
@@ -122,20 +132,14 @@ var getKey = () => {
 }
 
 var aliceKey;
-var bobKey;
 while (!aliceKey) {
 	aliceKey = getKey();
 }
-while(!bobKey) {
-	bobKey = getKey();
-}
 console.log(`Ключи Алисы:\nприватный - {${aliceKey.p.k}, ${aliceKey.p.m}}\nоткрытый - {${aliceKey.o.k}, ${aliceKey.o.m}}\n`);
-console.log(`Ключи Боба:\nприватный - {${bobKey.p.k}, ${bobKey.p.m}}\nоткрытый - {${bobKey.o.k}, ${bobKey.o.m}}\n`);
 
-console.log(`Алиса хочет передать Бобу сообщение: "Привет, меня зовут Алиса"`);
-var en = encrypt("Привет, меня зовут Алиса", aliceKey.o)
-console.log(en);
+var toCrypt = BigInt(3);
+log(`Шифруем число: ${toCrypt}`);
+var en = encrypt(toCrypt, aliceKey.o);
+log(`Зашифровано: ${en}`);
 var de = decrypt(en, aliceKey.p);
-console.log(de);
-
-
+log(`Расшифровано: ${de}`);
