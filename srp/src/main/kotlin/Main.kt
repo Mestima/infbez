@@ -49,6 +49,10 @@ fun main(args: Array<String>) {
     // Сервер. Шаг 1. Поиск пользователя в БД, вычисление B
     val serverSession = SRP6ServerSession(config)
     val B = serverSession.step1(login, salt, verifier)
+    /*
+    b = random()
+    B = kv + gb, где k = H(N, g)
+     */
 
     println("s: " + salt.toString(16))
     println("B: " + B.toString(16))
@@ -63,7 +67,7 @@ fun main(args: Array<String>) {
     println("Client session key: " + clientSession.sessionKey.toString(16))
 
     // Сервер. Шаг 2. Вычисление M2
-    val M2 = serverSession.step2(A, M1) // M2 = H(A | M1 | SS)
+    val M2 = serverSession.step2(A, M1) // M2 = H(A | M1 | SS) (опционально)
 
     println("M2: " + M2.toString(16))
     println("Server session key: " + serverSession.sessionKey.toString(16))
