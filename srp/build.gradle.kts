@@ -12,7 +12,9 @@ repositories {
     mavenCentral()
 }
 
-
+dependencies {
+    implementation("com.nimbusds:srp6a:2.1.0")
+}
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
