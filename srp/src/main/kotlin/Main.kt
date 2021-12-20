@@ -6,15 +6,38 @@ import java.math.BigInteger
 
 
 fun main(args: Array<String>) {
-    val config: SRP6CryptoParams = SRP6CryptoParams.getInstance(256, "SHA-1")
+    // N = 125617018995153554710546479714086468244499594888726646874671447258204721048803 (2*q+1, q - prime)
+    // g = 2
+    // H = SHA-256
+    val config: SRP6CryptoParams = SRP6CryptoParams.getInstance(256, "SHA-256")
 
     // Регистрация нового пользователя
     val login = "login"
     val password = "password"
 
     val verifierGenerator = SRP6VerifierGenerator(config)
-    val salt = BigInteger(verifierGenerator.generateRandomSalt(16))
-    val verifier = verifierGenerator.generateVerifier(salt, password)
+    val salt = BigInteger(verifierGenerator.generateRandomSalt(16)) // 16 бит
+    val verifier = verifierGenerator.generateVerifier(salt, password) // v = g^x (mod N)
+    /*
+    public BigInteger generateVerifier(final BigInteger salt, final String userID, final String password) {
+
+		byte[] userIDBytes = null;
+
+		if (userID != null)
+			userIDBytes = userID.getBytes(Charset.forName("UTF-8"));
+
+		byte[] passwordBytes = password.getBytes(Charset.forName("UTF-8"));
+
+		byte[] saltBytes = BigIntegerUtils.bigIntegerToBytes(salt);
+
+		return generateVerifier(saltBytes, userIDBytes, passwordBytes);
+	}
+
+	public BigInteger generateVerifier(final byte[] salt, final byte[] password) {
+
+		return generateVerifier(salt, null, password);
+	}
+     */
 
     println("s: " + salt.toString(16))
     println("v: " + verifier.toString(16))
@@ -32,15 +55,15 @@ fun main(args: Array<String>) {
 
     // Клиент. Шаг 2. Вычисление A и M1
     val credentials = clientSession.step2(config, salt, B)
-    val A = credentials.A
-    val M1 = credentials.M1
+    val A = credentials.A // генерация случайного числа 'a', а также вычисляется публичное A = g^a
+    val M1 = credentials.M1 // M1 = H(A | B | SC)
 
     println("A: " + A.toString(16))
     println("M1: " + M1.toString(16))
     println("Client session key: " + clientSession.sessionKey.toString(16))
 
     // Сервер. Шаг 2. Вычисление M2
-    val M2 = serverSession.step2(A, M1)
+    val M2 = serverSession.step2(A, M1) // M2 = H(A | M1 | SS)
 
     println("M2: " + M2.toString(16))
     println("Server session key: " + serverSession.sessionKey.toString(16))
